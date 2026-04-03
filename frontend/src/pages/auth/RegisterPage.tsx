@@ -31,8 +31,8 @@ export default function RegisterPage() {
     setSubmitting(true);
     try {
       await register({ email: form.email, password: form.password, fullName: form.fullName, studentId: form.studentId });
-      toast.success('Account created! Please verify your email.');
-      navigate('/verify-email');
+      toast.success('Account created!');
+      navigate('/');
     } catch (err: any) {
       toast.error(err.response?.data?.error || 'Registration failed');
     } finally {

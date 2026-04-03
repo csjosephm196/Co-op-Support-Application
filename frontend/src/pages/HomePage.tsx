@@ -10,7 +10,6 @@ export default function HomePage() {
   }
 
   if (!user) return <Navigate to="/login" replace />;
-  if (!user.isVerified && user.role === 'student') return <Navigate to="/verify-email" replace />;
 
   const quickLinks = () => {
     switch (user.role) {

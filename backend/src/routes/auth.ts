@@ -47,21 +47,19 @@ router.post('/register', async (req: Request, res: Response) => {
     const passwordHash = await hashPassword(password);
     const result = await query(
       `INSERT INTO users (email, password_hash, full_name, role, student_id, is_verified)
-       VALUES ($1, $2, $3, 'student', $4, false)
+       VALUES ($1, $2, $3, 'student', $4, true)
        RETURNING id, email, full_name, role`,
       [email, passwordHash, fullName, studentId]
     );
 
     const user = result.rows[0];
-    await createAndSendVerification(user.id, user.email);
 
     const token = createJwtForUser(user);
 
     res.status(201).json({
-      message: 'Account created. Please verify your email.',
+      message: 'Account created successfully.',
       token,
-      user: { id: user.id, email: user.email, fullName: user.full_name, role: user.role, isVerified: false },
-      requiresVerification: true,
+      user: { id: user.id, email: user.email, fullName: user.full_name, role: user.role, isVerified: true },
     });
   } catch (err: any) {
     console.error('Registration error:', err);

@@ -42,12 +42,12 @@ export default function App() {
 
           {/* Student Routes */}
           <Route path="/student/application" element={
-            <ProtectedRoute roles={['student']} requireVerified>
+            <ProtectedRoute roles={['student']}>
               <ApplicationPage />
             </ProtectedRoute>
           } />
           <Route path="/student/documents" element={
-            <ProtectedRoute roles={['student']} requireVerified>
+            <ProtectedRoute roles={['student']}>
               <DocumentsPage />
             </ProtectedRoute>
           } />
