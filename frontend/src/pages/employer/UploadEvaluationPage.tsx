@@ -73,12 +73,10 @@ export default function UploadEvaluationPage() {
   const handleSubmitForm = async () => {
     setShowConfirm(false);
     if (!selectedStudent) return;
-
     const required = ['performanceRating', 'technicalSkills', 'communication', 'overallComments'] as const;
     for (const f of required) {
       if (!formData[f]) { toast.error(`Missing required field: ${f.replace(/([A-Z])/g, ' $1').trim()}`); return; }
     }
-
     setSubmitting(true);
     try {
       const { data } = await api.post('/documents/employer-form', { studentId: selectedStudent, formData });
@@ -96,20 +94,30 @@ export default function UploadEvaluationPage() {
   const canSubmit = selectedStudent && (method === 'pdf' ? selectedFile : formData.performanceRating && formData.technicalSkills && formData.communication && formData.overallComments);
 
   if (loading) {
-    return <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>;
+    return (
+      <div className="flex justify-center py-20">
+        <div className="w-8 h-8 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">Submit Evaluation</h1>
-        <p className="text-gray-500 text-sm mb-6">Upload a scanned PDF or fill out the online evaluation form.</p>
-
-        <div className="space-y-5">
+    <div className="max-w-2xl mx-auto space-y-6 fade-in">
+      <div className="card p-8">
+        <div className="flex items-center gap-3 mb-1">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-green-600 flex items-center justify-center shadow-sm">
+            <Upload className="w-5 h-5 text-white" />
+          </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Select Student *</label>
-            <select value={selectedStudent} onChange={(e) => setSelectedStudent(e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none">
+            <h1 className="section-title text-xl">Submit Evaluation</h1>
+            <p className="text-gray-500 text-sm mt-0.5">Upload a scanned PDF or fill out the online form.</p>
+          </div>
+        </div>
+
+        <div className="space-y-5 mt-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Select Student *</label>
+            <select value={selectedStudent} onChange={(e) => setSelectedStudent(e.target.value)} className="input">
               <option value="">Choose a student...</option>
               {students.map((s) => (
                 <option key={s.student_id} value={s.student_id}>{s.full_name}</option>
@@ -118,16 +126,16 @@ export default function UploadEvaluationPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Submission Method</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Submission Method</label>
             <div className="flex gap-3">
               <button onClick={() => setMethod('pdf')}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg border text-sm font-medium transition
-                  ${method === 'pdf' ? 'bg-primary-50 border-primary-300 text-primary-700' : 'border-gray-300 text-gray-500 hover:bg-gray-50'}`}>
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-medium transition-all
+                  ${method === 'pdf' ? 'bg-blue-50 border-blue-300 text-blue-700 shadow-sm' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}`}>
                 <Upload className="w-4 h-4" /> Upload PDF
               </button>
               <button onClick={() => setMethod('form')}
-                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg border text-sm font-medium transition
-                  ${method === 'form' ? 'bg-primary-50 border-primary-300 text-primary-700' : 'border-gray-300 text-gray-500 hover:bg-gray-50'}`}>
+                className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl border text-sm font-medium transition-all
+                  ${method === 'form' ? 'bg-blue-50 border-blue-300 text-blue-700 shadow-sm' : 'border-gray-200 text-gray-500 hover:bg-gray-50'}`}>
                 <ClipboardList className="w-4 h-4" /> Online Form
               </button>
             </div>
@@ -135,67 +143,66 @@ export default function UploadEvaluationPage() {
 
           {method === 'pdf' ? (
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Evaluation PDF</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Evaluation PDF</label>
               <input ref={fileRef} type="file" accept=".pdf,application/pdf" onChange={handleFileSelect}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:bg-primary-50 file:text-primary-700 file:font-medium file:cursor-pointer" />
-              {fileError && <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertTriangle className="w-3 h-3" /> {fileError}</p>}
+                className="input file:mr-4 file:py-1.5 file:px-4 file:rounded-lg file:border-0 file:bg-blue-50 file:text-blue-700 file:font-semibold file:text-sm file:cursor-pointer hover:file:bg-blue-100" />
+              {fileError && <p className="text-red-500 text-xs mt-1.5 flex items-center gap-1 font-medium"><AlertTriangle className="w-3 h-3" /> {fileError}</p>}
             </div>
           ) : (
-            <div className="space-y-4 bg-gray-50 rounded-lg p-4">
+            <div className="space-y-4 bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl p-5 border border-gray-100">
               {([
-                { key: 'performanceRating', label: 'Performance Rating *', type: 'select', options: ['Excellent', 'Good', 'Satisfactory', 'Needs Improvement', 'Unsatisfactory'] },
-                { key: 'technicalSkills', label: 'Technical Skills *', type: 'select', options: ['Excellent', 'Good', 'Satisfactory', 'Needs Improvement', 'Unsatisfactory'] },
-                { key: 'communication', label: 'Communication *', type: 'select', options: ['Excellent', 'Good', 'Satisfactory', 'Needs Improvement', 'Unsatisfactory'] },
-                { key: 'teamwork', label: 'Teamwork', type: 'select', options: ['Excellent', 'Good', 'Satisfactory', 'Needs Improvement', 'Unsatisfactory'] },
-                { key: 'initiative', label: 'Initiative', type: 'select', options: ['Excellent', 'Good', 'Satisfactory', 'Needs Improvement', 'Unsatisfactory'] },
-                { key: 'recommendForFuture', label: 'Recommend for Future?', type: 'select', options: ['Yes', 'No', 'Maybe'] },
+                { key: 'performanceRating', label: 'Performance Rating *', options: ['Excellent', 'Good', 'Satisfactory', 'Needs Improvement', 'Unsatisfactory'] },
+                { key: 'technicalSkills', label: 'Technical Skills *', options: ['Excellent', 'Good', 'Satisfactory', 'Needs Improvement', 'Unsatisfactory'] },
+                { key: 'communication', label: 'Communication *', options: ['Excellent', 'Good', 'Satisfactory', 'Needs Improvement', 'Unsatisfactory'] },
+                { key: 'teamwork', label: 'Teamwork', options: ['Excellent', 'Good', 'Satisfactory', 'Needs Improvement', 'Unsatisfactory'] },
+                { key: 'initiative', label: 'Initiative', options: ['Excellent', 'Good', 'Satisfactory', 'Needs Improvement', 'Unsatisfactory'] },
+                { key: 'recommendForFuture', label: 'Recommend for Future?', options: ['Yes', 'No', 'Maybe'] },
               ] as const).map((f) => (
                 <div key={f.key}>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">{f.label}</label>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1.5">{f.label}</label>
                   <select value={formData[f.key as keyof typeof formData]} onChange={(e) => setFormData({ ...formData, [f.key]: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none bg-white">
+                    className="input bg-white">
                     <option value="">Select...</option>
                     {f.options.map((o) => <option key={o} value={o}>{o}</option>)}
                   </select>
                 </div>
               ))}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Overall Comments *</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1.5">Overall Comments *</label>
                 <textarea value={formData.overallComments} onChange={(e) => setFormData({ ...formData, overallComments: e.target.value })}
-                  rows={4} className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none resize-y bg-white"
+                  rows={4} className="input bg-white resize-y"
                   placeholder="Provide your overall assessment of the student's co-op performance..." />
               </div>
             </div>
           )}
 
           <button onClick={() => setShowConfirm(true)} disabled={!canSubmit || submitting}
-            className="w-full py-3 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 disabled:opacity-50 transition">
-            {submitting ? 'Submitting...' : 'Submit / Upload'}
+            className="btn-primary w-full flex items-center justify-center gap-2 py-3">
+            {submitting ? 'Submitting...' : 'Submit Evaluation'}
           </button>
         </div>
 
         {lastConfirmation && (
-          <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg flex items-start gap-3">
-            <FileCheck className="w-5 h-5 text-green-600 mt-0.5" />
+          <div className="mt-5 p-4 bg-emerald-50 border border-emerald-200 rounded-xl flex items-start gap-3">
+            <FileCheck className="w-5 h-5 text-emerald-600 mt-0.5" />
             <div>
-              <p className="text-green-800 font-medium text-sm">Evaluation submitted successfully</p>
-              <p className="text-green-600 text-xs mt-1">Confirmation #: {lastConfirmation}</p>
+              <p className="text-emerald-800 font-semibold text-sm">Evaluation submitted successfully</p>
+              <p className="text-emerald-600 text-xs mt-1 font-mono">Confirmation #: {lastConfirmation}</p>
             </div>
           </div>
         )}
       </div>
 
       {showConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-xl">
+        <div className="modal-overlay">
+          <div className="modal-content p-6 max-w-sm w-full">
             <h2 className="text-lg font-bold mb-2">Confirm Submission</h2>
             <p className="text-gray-500 text-sm mb-6">
               Submit this evaluation {method === 'pdf' ? 'PDF' : 'form'} for the selected student?
             </p>
             <div className="flex gap-3">
-              <button onClick={() => setShowConfirm(false)} className="flex-1 py-2 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition">Cancel</button>
-              <button onClick={method === 'pdf' ? handleSubmitPdf : handleSubmitForm}
-                className="flex-1 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition">Confirm</button>
+              <button onClick={() => setShowConfirm(false)} className="btn-secondary flex-1">Cancel</button>
+              <button onClick={method === 'pdf' ? handleSubmitPdf : handleSubmitForm} className="btn-primary flex-1">Confirm</button>
             </div>
           </div>
         </div>

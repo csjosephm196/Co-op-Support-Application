@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import toast from 'react-hot-toast';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, GraduationCap } from 'lucide-react';
 
 export default function RegisterPage() {
   const { register } = useAuth();
@@ -42,30 +42,30 @@ export default function RegisterPage() {
 
   const field = (key: keyof typeof form, label: string, type = 'text', placeholder = '') => (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
+      <label className="block text-sm font-semibold text-gray-700 mb-1.5">{label}</label>
       <input
         type={type}
         value={form[key]}
         onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-        className={`w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition ${errors[key] ? 'border-red-400' : 'border-gray-300'}`}
+        className={`input ${errors[key] ? 'input-error' : ''}`}
         placeholder={placeholder}
       />
-      {errors[key] && <p className="text-red-500 text-xs mt-1">{errors[key]}</p>}
+      {errors[key] && <p className="text-red-500 text-xs mt-1.5 font-medium">{errors[key]}</p>}
     </div>
   );
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 py-8 fade-in">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-12 h-12 bg-primary-100 rounded-xl mb-4">
-              <UserPlus className="w-6 h-6 text-primary-600" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">Student Sign Up</h1>
-            <p className="text-gray-500 mt-1">Create your Co-op portal account</p>
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl mb-5 shadow-lg shadow-blue-500/25">
+            <GraduationCap className="w-8 h-8 text-white" />
           </div>
+          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">Create Account</h1>
+          <p className="text-gray-500 mt-2">Sign up for the Co-op Support Portal</p>
+        </div>
 
+        <div className="card p-8">
           <form onSubmit={handleSubmit} className="space-y-4">
             {field('fullName', 'Full Name', 'text', 'John Doe')}
             {field('studentId', 'Student ID', 'text', '501 234 567')}
@@ -73,23 +73,20 @@ export default function RegisterPage() {
             {field('password', 'Password', 'password', 'Min 8 chars, uppercase, number, symbol')}
             {field('confirmPassword', 'Confirm Password', 'password', 'Re-enter password')}
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-2.5 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 disabled:opacity-50 transition"
-            >
+            <button type="submit" disabled={submitting} className="btn-primary w-full flex items-center justify-center gap-2 !mt-6">
+              <UserPlus className="w-4 h-4" />
               {submitting ? 'Creating Account...' : 'Sign Up'}
             </button>
           </form>
-
-          <p className="mt-6 text-center text-sm text-gray-500">
-            Already have an account?{' '}
-            <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">Sign In</Link>
-          </p>
-          <p className="mt-2 text-center text-xs text-gray-400">
-            Coordinators &amp; Employers: You must be invited. Contact the co-op management team.
-          </p>
         </div>
+
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Already have an account?{' '}
+          <Link to="/login" className="text-blue-600 hover:text-blue-700 font-semibold">Sign In</Link>
+        </p>
+        <p className="mt-2 text-center text-xs text-gray-400">
+          Coordinators &amp; Employers: You must be invited. Contact the co-op management team.
+        </p>
       </div>
     </div>
   );

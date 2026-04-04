@@ -43,44 +43,42 @@ export default function VerifyEmailPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center px-4">
+    <div className="min-h-[80vh] flex items-center justify-center px-4 fade-in">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-primary-100 rounded-xl mb-4">
-            <MailCheck className="w-6 h-6 text-primary-600" />
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl mb-5 shadow-lg shadow-blue-500/25">
+            <MailCheck className="w-8 h-8 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Verify Your Email</h1>
-          <p className="text-gray-500 mb-6">
-            We sent a 6-digit code to <strong>{user?.email}</strong>
+          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">Verify Your Email</h1>
+          <p className="text-gray-500 mt-2">
+            We sent a 6-digit code to <strong className="text-gray-700">{user?.email}</strong>
           </p>
+        </div>
 
-          <form onSubmit={handleVerify} className="space-y-4">
+        <div className="card p-8">
+          <form onSubmit={handleVerify} className="space-y-5">
             <input
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
               maxLength={6}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg text-center text-2xl tracking-widest focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition"
+              className="input text-center text-2xl tracking-[0.3em] font-mono"
               placeholder="000000"
             />
-            <button
-              type="submit"
-              disabled={submitting || code.length !== 6}
-              className="w-full py-2.5 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 disabled:opacity-50 transition"
-            >
+            <button type="submit" disabled={submitting || code.length !== 6}
+              className="btn-primary w-full">
               {submitting ? 'Verifying...' : 'Verify Email'}
             </button>
           </form>
 
-          <button
-            onClick={handleResend}
-            disabled={!canResend}
-            className="mt-4 text-sm text-primary-600 hover:text-primary-700 disabled:text-gray-400 disabled:cursor-not-allowed transition"
-          >
-            {canResend ? 'Resend Email' : 'Resend available in 30s...'}
-          </button>
+          <div className="text-center mt-5">
+            <button onClick={handleResend} disabled={!canResend}
+              className="text-sm text-blue-600 hover:text-blue-700 disabled:text-gray-400 disabled:cursor-not-allowed font-medium transition-colors">
+              {canResend ? 'Resend Email' : 'Resend available in 30s...'}
+            </button>
+          </div>
 
-          <p className="mt-4 text-xs text-gray-400">
+          <p className="mt-4 text-xs text-gray-400 text-center">
             Having trouble? Contact Support at support@csa-portal.com
           </p>
         </div>

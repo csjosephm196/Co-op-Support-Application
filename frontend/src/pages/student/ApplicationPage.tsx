@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { FileText, CheckCircle, Clock, XCircle } from 'lucide-react';
+import { FileText, CheckCircle, Clock, XCircle, Send, Save } from 'lucide-react';
 
 interface ApplicationData {
   id?: string;
@@ -26,13 +26,13 @@ const emptyApp: ApplicationData = {
   address: '',
 };
 
-const statusDisplay: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  draft: { label: 'Draft', color: 'text-gray-500 bg-gray-100', icon: <FileText className="w-5 h-5" /> },
-  pending: { label: 'Pending Review', color: 'text-yellow-700 bg-yellow-100', icon: <Clock className="w-5 h-5" /> },
-  provisionally_accepted: { label: 'Pending Review', color: 'text-yellow-700 bg-yellow-100', icon: <Clock className="w-5 h-5" /> },
-  provisionally_rejected: { label: 'Pending Review', color: 'text-yellow-700 bg-yellow-100', icon: <Clock className="w-5 h-5" /> },
-  finally_accepted: { label: 'Accepted', color: 'text-green-700 bg-green-100', icon: <CheckCircle className="w-5 h-5" /> },
-  finally_rejected: { label: 'Rejected', color: 'text-red-700 bg-red-100', icon: <XCircle className="w-5 h-5" /> },
+const statusDisplay: Record<string, { label: string; badge: string; icon: React.ReactNode }> = {
+  draft: { label: 'Draft', badge: 'badge badge-gray', icon: <FileText className="w-4 h-4" /> },
+  pending: { label: 'Pending Review', badge: 'badge badge-pending', icon: <Clock className="w-4 h-4" /> },
+  provisionally_accepted: { label: 'Under Review', badge: 'badge badge-pending', icon: <Clock className="w-4 h-4" /> },
+  provisionally_rejected: { label: 'Under Review', badge: 'badge badge-pending', icon: <Clock className="w-4 h-4" /> },
+  finally_accepted: { label: 'Accepted', badge: 'badge badge-success', icon: <CheckCircle className="w-4 h-4" /> },
+  finally_rejected: { label: 'Rejected', badge: 'badge badge-danger', icon: <XCircle className="w-4 h-4" /> },
 };
 
 export default function ApplicationPage() {
@@ -72,7 +72,7 @@ export default function ApplicationPage() {
         coverLetter: data.coverLetter, additionalInfo: data.additionalInfo,
         phone: data.phone, address: data.address,
       });
-    } catch { /* silent autosave failure */ }
+    } catch { /* silent */ }
   }, [submitted]);
 
   useEffect(() => {
@@ -107,7 +107,7 @@ export default function ApplicationPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+        <div className="w-8 h-8 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
       </div>
     );
   }
@@ -116,19 +116,19 @@ export default function ApplicationPage() {
 
   if (submitted) {
     return (
-      <div className="max-w-2xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8 text-center">
-          <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium ${s.color} mb-4`}>
+      <div className="max-w-2xl mx-auto fade-in">
+        <div className="card p-10 text-center">
+          <div className={`inline-flex items-center gap-2 ${s.badge} mb-5 text-sm`}>
             {s.icon} {s.label}
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Application Submitted</h1>
-          <p className="text-gray-500 mb-6">
+          <h1 className="section-title text-2xl mb-3">Application Submitted</h1>
+          <p className="text-gray-500 mb-8 max-w-md mx-auto">
             Your co-op application has been submitted and is under review. You will receive an email once a decision has been made.
           </p>
-          <div className="bg-gray-50 rounded-lg p-4 text-left space-y-2 text-sm">
-            <div className="flex justify-between"><span className="text-gray-500">Program</span><span className="font-medium">{app.program}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">GPA</span><span className="font-medium">{app.gpa}</span></div>
-            <div className="flex justify-between"><span className="text-gray-500">Year</span><span className="font-medium">{app.yearOfStudy}</span></div>
+          <div className="bg-gradient-to-r from-slate-50 to-gray-50 rounded-xl p-5 text-left space-y-3 text-sm border border-gray-100">
+            <div className="flex justify-between"><span className="text-gray-400">Program</span><span className="font-semibold text-gray-900">{app.program}</span></div>
+            <div className="flex justify-between"><span className="text-gray-400">GPA</span><span className="font-semibold text-gray-900">{app.gpa}</span></div>
+            <div className="flex justify-between"><span className="text-gray-400">Year</span><span className="font-semibold text-gray-900">{app.yearOfStudy}</span></div>
           </div>
         </div>
       </div>
@@ -136,27 +136,36 @@ export default function ApplicationPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">Co-op Application</h1>
-        <p className="text-gray-500 text-sm mb-6">Your progress is automatically saved.</p>
+    <div className="max-w-2xl mx-auto fade-in">
+      <div className="card p-8">
+        <div className="flex items-center gap-3 mb-1">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm">
+            <FileText className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <h1 className="section-title text-xl">Co-op Application</h1>
+            <div className="flex items-center gap-1.5 text-xs text-gray-400 mt-0.5">
+              <Save className="w-3 h-3" /> Auto-saving enabled
+            </div>
+          </div>
+        </div>
 
-        <div className="space-y-5">
+        <div className="space-y-5 mt-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">GPA *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">GPA *</label>
               <input type="number" step="0.01" min="0" max="4.0" value={app.gpa}
                 onChange={(e) => handleChange('gpa', e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
+                className={`input ${app.gpa && parseFloat(app.gpa) < 3.0 ? 'input-error' : ''}`}
                 placeholder="3.50" />
               {app.gpa && parseFloat(app.gpa) < 3.0 && (
-                <p className="text-red-500 text-xs mt-1">Minimum 3.0 GPA required</p>
+                <p className="text-red-500 text-xs mt-1.5 font-medium">Minimum 3.0 GPA required</p>
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Year of Study *</label>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Year of Study *</label>
               <select value={app.yearOfStudy} onChange={(e) => handleChange('yearOfStudy', e.target.value)}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none">
+                className="input">
                 <option value="">Select</option>
                 <option value="1">1st Year</option>
                 <option value="2">2nd Year</option>
@@ -167,65 +176,56 @@ export default function ApplicationPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Program *</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Program *</label>
             <input type="text" value={app.program} onChange={(e) => handleChange('program', e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-              placeholder="Computer Science" />
+              className="input" placeholder="Computer Science" />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Phone</label>
+              <input type="tel" value={app.phone} onChange={(e) => handleChange('phone', e.target.value)}
+                className="input" placeholder="(416) 555-0123" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">Address</label>
+              <input type="text" value={app.address} onChange={(e) => handleChange('address', e.target.value)}
+                className="input" placeholder="123 Main St, Toronto" />
+            </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
-            <input type="tel" value={app.phone} onChange={(e) => handleChange('phone', e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-              placeholder="(416) 555-0123" />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
-            <input type="text" value={app.address} onChange={(e) => handleChange('address', e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none"
-              placeholder="123 Main St, Toronto, ON" />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Cover Letter</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Cover Letter</label>
             <textarea value={app.coverLetter} onChange={(e) => handleChange('coverLetter', e.target.value)}
-              rows={5}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none resize-y"
+              rows={5} className="input resize-y"
               placeholder="Why you want to participate in the co-op program..." />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Additional Information</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1.5">Additional Information</label>
             <textarea value={app.additionalInfo} onChange={(e) => handleChange('additionalInfo', e.target.value)}
-              rows={3}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none resize-y"
+              rows={3} className="input resize-y"
               placeholder="Any other details..." />
           </div>
 
-          <div className="pt-2">
-            <button onClick={() => setShowConfirm(true)} disabled={submitting}
-              className="w-full py-3 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 disabled:opacity-50 transition">
-              Submit Application
-            </button>
-          </div>
+          <button onClick={() => setShowConfirm(true)} disabled={submitting}
+            className="btn-primary w-full flex items-center justify-center gap-2 py-3 !mt-7">
+            <Send className="w-4 h-4" />
+            Submit Application
+          </button>
         </div>
       </div>
 
       {showConfirm && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 max-w-sm w-full shadow-xl">
+        <div className="modal-overlay">
+          <div className="modal-content p-6 max-w-sm w-full">
             <h2 className="text-lg font-bold mb-2">Confirm Submission</h2>
             <p className="text-gray-500 text-sm mb-6">
               Once submitted, you cannot modify your application. Are you sure?
             </p>
             <div className="flex gap-3">
-              <button onClick={() => setShowConfirm(false)} className="flex-1 py-2 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition">
-                Cancel
-              </button>
-              <button onClick={handleSubmit} className="flex-1 py-2 bg-primary-600 text-white rounded-lg font-medium hover:bg-primary-700 transition">
-                Confirm
-              </button>
+              <button onClick={() => setShowConfirm(false)} className="btn-secondary flex-1">Cancel</button>
+              <button onClick={handleSubmit} className="btn-primary flex-1">Confirm</button>
             </div>
           </div>
         </div>

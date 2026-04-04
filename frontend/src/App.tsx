@@ -26,10 +26,15 @@ export default function App() {
   const { user } = useAuth();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Toaster position="top-right" toastOptions={{ duration: 4000 }} />
+    <div className="min-h-screen">
+      <Toaster position="top-right" toastOptions={{
+        duration: 4000,
+        style: { borderRadius: '12px', background: '#1e293b', color: '#f8fafc', fontSize: '14px', fontWeight: 500 },
+        success: { style: { background: '#059669' } },
+        error: { style: { background: '#dc2626' } },
+      }} />
       <Navbar />
-      <main className="px-4 sm:px-6 lg:px-8 py-8">
+      <main className="px-4 sm:px-6 lg:px-8 py-8 max-w-7xl mx-auto">
         <Routes>
           {/* Public / Auth Routes */}
           <Route path="/login" element={user ? <Navigate to="/" /> : <LoginPage />} />

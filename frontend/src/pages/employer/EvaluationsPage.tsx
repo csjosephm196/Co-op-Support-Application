@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
-import { FileText } from 'lucide-react';
+import { FileText, ClipboardList, Upload } from 'lucide-react';
 
 interface Evaluation {
   id: string;
@@ -23,44 +23,51 @@ export default function EvaluationsPage() {
   }, []);
 
   if (loading) {
-    return <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>;
+    return (
+      <div className="flex justify-center py-20">
+        <div className="w-8 h-8 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto fade-in">
       <div className="flex items-center gap-3 mb-6">
-        <FileText className="w-6 h-6 text-primary-600" />
-        <h1 className="text-2xl font-bold text-gray-900">Submitted Evaluations</h1>
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shadow-sm">
+          <FileText className="w-5 h-5 text-white" />
+        </div>
+        <h1 className="section-title text-2xl">Submitted Evaluations</h1>
       </div>
 
       {evals.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center text-gray-400">
-          No evaluations submitted yet.
+        <div className="card p-16 text-center">
+          <FileText className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+          <p className="text-gray-400">No evaluations submitted yet.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="card overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="table-header">
               <tr>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Student</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Type</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Confirmation #</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Date</th>
+                <th className="table-header-cell">Student</th>
+                <th className="table-header-cell">Type</th>
+                <th className="table-header-cell">Confirmation #</th>
+                <th className="table-header-cell">Date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {evals.map((ev) => (
-                <tr key={ev.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3 font-medium">{ev.student_name}</td>
-                  <td className="px-4 py-3">
+                <tr key={ev.id} className="hover:bg-slate-50/50 transition-colors">
+                  <td className="table-cell font-semibold text-gray-900">{ev.student_name}</td>
+                  <td className="table-cell">
                     {ev.is_online_form ? (
-                      <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">Online Form</span>
+                      <span className="badge badge-info"><ClipboardList className="w-3 h-3" /> Online Form</span>
                     ) : (
-                      <span className="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded-full">PDF Upload</span>
+                      <span className="badge badge-gray"><Upload className="w-3 h-3" /> PDF Upload</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-gray-500 font-mono text-xs">{ev.confirmation_number}</td>
-                  <td className="px-4 py-3 text-gray-500">{new Date(ev.uploaded_at).toLocaleDateString()}</td>
+                  <td className="table-cell text-gray-500 font-mono text-xs">{ev.confirmation_number}</td>
+                  <td className="table-cell text-gray-500">{new Date(ev.uploaded_at).toLocaleDateString()}</td>
                 </tr>
               ))}
             </tbody>

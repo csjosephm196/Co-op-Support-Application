@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
-import { MapPin } from 'lucide-react';
+import { MapPin, Pencil, Save, X } from 'lucide-react';
 
 interface TrackerEntry {
   id: string;
@@ -47,74 +47,90 @@ export default function TrackerPage() {
   };
 
   if (loading) {
-    return <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>;
+    return (
+      <div className="flex justify-center py-20">
+        <div className="w-8 h-8 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
+  const statusBadge = (status: string) => {
+    if (status === 'placed') return 'badge badge-success';
+    if (status === 'withdrawn') return 'badge badge-gray';
+    return 'badge badge-pending';
+  };
+
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="flex items-center gap-3 mb-6">
-        <MapPin className="w-6 h-6 text-primary-600" />
-        <h1 className="text-2xl font-bold text-gray-900">Placement Tracker</h1>
+    <div className="page-container fade-in">
+      <div className="flex items-center gap-3 mb-2">
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-sm">
+          <MapPin className="w-5 h-5 text-white" />
+        </div>
+        <h1 className="section-title text-2xl">Placement Tracker</h1>
       </div>
-      <p className="text-gray-500 text-sm mb-6">
+      <p className="text-gray-500 text-sm mb-6 ml-[52px]">
         Accepted co-op students who are seeking or have not yet found a placement.
       </p>
 
       {entries.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center text-gray-400">
-          No tracker entries yet.
+        <div className="card p-16 text-center">
+          <MapPin className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+          <p className="text-gray-400">No tracker entries yet.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="card overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="table-header">
               <tr>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Student</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">ID</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Status</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Notes</th>
-                <th className="px-4 py-3 text-right font-medium text-gray-600">Actions</th>
+                <th className="table-header-cell">Student</th>
+                <th className="table-header-cell">ID</th>
+                <th className="table-header-cell">Status</th>
+                <th className="table-header-cell">Notes</th>
+                <th className="table-header-cell text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {entries.map((e) => (
-                <tr key={e.id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3">
-                    <p className="font-medium">{e.full_name}</p>
+                <tr key={e.id} className="hover:bg-slate-50/50 transition-colors">
+                  <td className="table-cell">
+                    <p className="font-semibold text-gray-900">{e.full_name}</p>
                     <p className="text-xs text-gray-400">{e.email}</p>
                   </td>
-                  <td className="px-4 py-3 text-gray-600">{e.student_number}</td>
-                  <td className="px-4 py-3">
+                  <td className="table-cell text-gray-600 font-mono text-xs">{e.student_number}</td>
+                  <td className="table-cell">
                     {editing === e.student_id ? (
                       <select value={editStatus} onChange={(ev) => setEditStatus(ev.target.value)}
-                        className="border border-gray-300 rounded px-2 py-1 text-sm">
+                        className="input !w-auto !py-1.5 text-sm">
                         <option value="seeking">Seeking</option>
                         <option value="placed">Placed</option>
                         <option value="withdrawn">Withdrawn</option>
                       </select>
                     ) : (
-                      <span className={`text-xs px-2 py-1 rounded-full font-medium capitalize
-                        ${e.status === 'placed' ? 'bg-green-100 text-green-700' : e.status === 'withdrawn' ? 'bg-gray-100 text-gray-600' : 'bg-yellow-100 text-yellow-700'}`}>
-                        {e.status}
-                      </span>
+                      <span className={`${statusBadge(e.status)} capitalize`}>{e.status}</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-gray-500 max-w-xs truncate">
+                  <td className="table-cell text-gray-500 max-w-xs">
                     {editing === e.student_id ? (
                       <input value={editNotes} onChange={(ev) => setEditNotes(ev.target.value)}
-                        className="border border-gray-300 rounded px-2 py-1 text-sm w-full" placeholder="Notes..." />
+                        className="input !py-1.5 text-sm" placeholder="Notes..." />
                     ) : (
-                      e.notes || '—'
+                      <span className="truncate block">{e.notes || <span className="text-gray-300">—</span>}</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-right">
+                  <td className="table-cell text-right">
                     {editing === e.student_id ? (
-                      <div className="flex gap-1 justify-end">
-                        <button onClick={() => saveEdit(e.student_id)} className="text-xs px-3 py-1 bg-primary-600 text-white rounded hover:bg-primary-700 transition">Save</button>
-                        <button onClick={() => setEditing(null)} className="text-xs px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 transition">Cancel</button>
+                      <div className="flex gap-1.5 justify-end">
+                        <button onClick={() => saveEdit(e.student_id)} className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-all" title="Save">
+                          <Save className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => setEditing(null)} className="p-2 text-gray-400 hover:bg-gray-100 rounded-lg transition-all" title="Cancel">
+                          <X className="w-4 h-4" />
+                        </button>
                       </div>
                     ) : (
-                      <button onClick={() => startEdit(e)} className="text-xs px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 transition">Edit</button>
+                      <button onClick={() => startEdit(e)} className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit">
+                        <Pencil className="w-4 h-4" />
+                      </button>
                     )}
                   </td>
                 </tr>

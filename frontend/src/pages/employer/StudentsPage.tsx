@@ -22,39 +22,48 @@ export default function StudentsPage() {
   }, []);
 
   if (loading) {
-    return <div className="flex justify-center py-20"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div></div>;
+    return (
+      <div className="flex justify-center py-20">
+        <div className="w-8 h-8 border-3 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto fade-in">
       <div className="flex items-center gap-3 mb-6">
-        <Users className="w-6 h-6 text-primary-600" />
-        <h1 className="text-2xl font-bold text-gray-900">My Assigned Students</h1>
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm">
+          <Users className="w-5 h-5 text-white" />
+        </div>
+        <h1 className="section-title text-2xl">My Assigned Students</h1>
       </div>
 
       {students.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-12 text-center text-gray-400">
-          No students assigned to you yet.
+        <div className="card p-16 text-center">
+          <Users className="w-12 h-12 text-gray-200 mx-auto mb-3" />
+          <p className="text-gray-400">No students assigned to you yet.</p>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="card overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="table-header">
               <tr>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Student</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Student ID</th>
-                <th className="px-4 py-3 text-left font-medium text-gray-600">Work Term</th>
+                <th className="table-header-cell">Student</th>
+                <th className="table-header-cell">Student ID</th>
+                <th className="table-header-cell">Work Term</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {students.map((s) => (
-                <tr key={s.assignment_id} className="hover:bg-gray-50">
-                  <td className="px-4 py-3">
-                    <p className="font-medium">{s.full_name}</p>
+                <tr key={s.assignment_id} className="hover:bg-slate-50/50 transition-colors">
+                  <td className="table-cell">
+                    <p className="font-semibold text-gray-900">{s.full_name}</p>
                     <p className="text-xs text-gray-400">{s.email}</p>
                   </td>
-                  <td className="px-4 py-3 text-gray-600">{s.student_number}</td>
-                  <td className="px-4 py-3 text-gray-600">{s.work_term || 'N/A'}</td>
+                  <td className="table-cell text-gray-600 font-mono text-xs">{s.student_number}</td>
+                  <td className="table-cell">
+                    <span className="badge badge-info">{s.work_term || 'N/A'}</span>
+                  </td>
                 </tr>
               ))}
             </tbody>
