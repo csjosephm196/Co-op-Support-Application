@@ -290,6 +290,32 @@ async function run() {
     test('Autosaved data is restored', false);
   }
 
+  // 21. DEADLINES
+  console.log('[Deadlines]');
+  const getDeadlines = await req('GET', '/api/documents/deadlines', null, studentToken);
+  test('GET deadlines returns array', getDeadlines.status === 200 && Array.isArray(getDeadlines.data));
+  test('Default deadline exists', getDeadlines.data.length >= 1);
+
+  const setDeadline = await req('POST', '/api/documents/deadlines', {
+    documentType: 'work_term_report', workTerm: 'Summer 2026', dueDate: '2026-08-31T23:59:59Z'
+  }, coordToken);
+  test('Coordinator can set deadline', setDeadline.status === 200);
+
+  const studentCantSet = await req('POST', '/api/documents/deadlines', {
+    documentType: 'work_term_report', workTerm: 'Fall 2026', dueDate: '2026-12-31T23:59:59Z'
+  }, studentToken);
+  test('Student cannot set deadline (403)', studentCantSet.status === 403);
+
+  // 22. TEMPLATE
+  console.log('[Template]');
+  const tmpl = await req('GET', '/api/documents/template', null, studentToken);
+  test('Student can generate template', tmpl.status === 200 && tmpl.data.title === 'Work Term Report');
+  test('Template has sections', Array.isArray(tmpl.data.sections) && tmpl.data.sections.length >= 5);
+  test('Template has student info', tmpl.data.student && tmpl.data.student.name === 'John Student');
+
+  const employerCantTemplate = await req('GET', '/api/documents/template', null, employerToken);
+  test('Employer cannot access template (403)', employerCantTemplate.status === 403);
+
   // SUMMARY
   console.log('\n========================================');
   console.log('TEST RESULTS');

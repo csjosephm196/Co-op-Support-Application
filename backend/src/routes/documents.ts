@@ -10,6 +10,75 @@ function generateConfirmationNumber(): string {
   return `CSA-${Date.now().toString(36).toUpperCase()}-${uuidv4().slice(0, 4).toUpperCase()}`;
 }
 
+// GET /api/documents/deadlines - Get active deadlines
+router.get('/deadlines', authenticate, async (_req: AuthRequest, res: Response) => {
+  try {
+    const result = await query('SELECT * FROM deadlines ORDER BY due_date ASC');
+    res.json(result.rows);
+  } catch (err: any) {
+    console.error('Get deadlines error:', err);
+    res.status(500).json({ error: 'Failed to fetch deadlines' });
+  }
+});
+
+// POST /api/documents/deadlines - Set a deadline (coordinator)
+router.post('/deadlines', authenticate, authorize('coordinator', 'admin'), async (req: AuthRequest, res: Response) => {
+  try {
+    const { documentType, workTerm, dueDate } = req.body;
+    if (!documentType || !workTerm || !dueDate) {
+      res.status(400).json({ error: 'documentType, workTerm, and dueDate are required' });
+      return;
+    }
+    await query(
+      `INSERT INTO deadlines (document_type, work_term, due_date, created_by)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (document_type, work_term) DO UPDATE SET due_date = $3`,
+      [documentType, workTerm, dueDate, req.user!.userId]
+    );
+    res.json({ message: 'Deadline saved' });
+  } catch (err: any) {
+    console.error('Set deadline error:', err);
+    res.status(500).json({ error: 'Failed to set deadline' });
+  }
+});
+
+// GET /api/documents/template - Generate a work term report template
+router.get('/template', authenticate, authorize('student'), async (req: AuthRequest, res: Response) => {
+  try {
+    const userResult = await query('SELECT full_name, student_id, email FROM users WHERE id = $1', [req.user!.userId]);
+    const user = userResult.rows[0];
+
+    const appResult = await query('SELECT program, year_of_study FROM applications WHERE student_id = $1', [req.user!.userId]);
+    const app = appResult.rows[0];
+
+    const template = {
+      title: 'Work Term Report',
+      generatedAt: new Date().toISOString(),
+      student: {
+        name: user.full_name,
+        studentId: user.student_id,
+        email: user.email,
+        program: app?.program || '',
+        yearOfStudy: app?.year_of_study || '',
+      },
+      sections: [
+        { heading: '1. Introduction', placeholder: 'Describe your co-op placement, including the company name, your role/title, and the duration of the work term.' },
+        { heading: '2. Job Description', placeholder: 'Detail your primary responsibilities and daily tasks during the work term.' },
+        { heading: '3. Skills & Technologies', placeholder: 'List the technical and soft skills you used or developed. Include programming languages, tools, frameworks, and methodologies.' },
+        { heading: '4. Key Accomplishments', placeholder: 'Highlight your most significant achievements and contributions to the team/company.' },
+        { heading: '5. Challenges & Solutions', placeholder: 'Describe any challenges you faced and how you overcame them.' },
+        { heading: '6. Learning Outcomes', placeholder: 'Reflect on what you learned during the work term and how it relates to your academic studies.' },
+        { heading: '7. Conclusion', placeholder: 'Summarize your overall experience and its impact on your career goals.' },
+      ],
+    };
+
+    res.json(template);
+  } catch (err: any) {
+    console.error('Template error:', err);
+    res.status(500).json({ error: 'Failed to generate template' });
+  }
+});
+
 // POST /api/documents/upload - Upload a PDF document (student: work term report)
 router.post(
   '/upload',
@@ -29,18 +98,31 @@ router.post(
         return;
       }
 
+      // Check deadline
+      const deadlineResult = await query(
+        `SELECT due_date FROM deadlines WHERE document_type = $1 ORDER BY due_date DESC LIMIT 1`,
+        [documentType]
+      );
+      const pastDeadline = deadlineResult.rows.length > 0 && new Date(deadlineResult.rows[0].due_date) < new Date();
+
       const confirmationNumber = generateConfirmationNumber();
       await query(
-        `INSERT INTO documents (uploader_id, student_id, document_type, file_path, file_name, file_size, confirmation_number)
-         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        `INSERT INTO documents (uploader_id, student_id, document_type, file_path, file_name, file_size, confirmation_number, deadline)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
         [
           req.user!.userId, req.user!.userId, documentType,
           req.file.path, req.file.originalname, req.file.size,
           confirmationNumber,
+          deadlineResult.rows[0]?.due_date || null,
         ]
       );
 
-      res.status(201).json({ message: 'Document uploaded successfully', confirmationNumber });
+      res.status(201).json({
+        message: 'Document uploaded successfully',
+        confirmationNumber,
+        pastDeadline,
+        ...(pastDeadline ? { warning: 'This document was submitted after the deadline.' } : {}),
+      });
     } catch (err: any) {
       console.error('Document upload error:', err);
       res.status(500).json({ error: 'Upload failed' });
