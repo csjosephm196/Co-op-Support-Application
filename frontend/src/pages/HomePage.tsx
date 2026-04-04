@@ -1,6 +1,6 @@
 import { useAuth } from '../context/AuthContext';
-import { Navigate, Link } from 'react-router-dom';
-import { GraduationCap, FileText, ClipboardCheck, Users, BarChart3, MapPin, Send, ArrowRight, Shield, Zap, Globe } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { GraduationCap, FileText, ClipboardCheck, Users, BarChart3, MapPin, Send, ArrowRight, Zap } from 'lucide-react';
 
 function LandingPage() {
   return (
@@ -28,24 +28,6 @@ function LandingPage() {
               Sign In
             </Link>
           </div>
-        </div>
-      </div>
-
-      <div className="max-w-5xl mx-auto px-4 pb-20">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            { icon: <Shield className="w-6 h-6" />, title: 'Secure & Role-Based', desc: 'JWT authentication with 2FA support. Separate portals for students, coordinators, and employers.', color: 'from-blue-500 to-blue-600' },
-            { icon: <Zap className="w-6 h-6" />, title: 'Streamlined Workflow', desc: 'From application to final decision — multi-stage review with provisional and final acceptance.', color: 'from-indigo-500 to-indigo-600' },
-            { icon: <Globe className="w-6 h-6" />, title: 'Complete Tracking', desc: 'Compliance reports, placement tracking, automated reminders, and document management.', color: 'from-purple-500 to-purple-600' },
-          ].map((f) => (
-            <div key={f.title} className="card p-8 group hover:border-blue-200 transition-all duration-300">
-              <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${f.color} flex items-center justify-center text-white mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                {f.icon}
-              </div>
-              <h3 className="font-bold text-gray-900 text-lg mb-2">{f.title}</h3>
-              <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
-            </div>
-          ))}
         </div>
       </div>
     </div>
