@@ -160,7 +160,6 @@ After running migrations, a default admin account is created:
 - **Email**: `admin@csa-portal.com`
 - **Password**: `Admin123!@#`
 
-> Change this immediately in production.
 
 ## Validation Rules
 
