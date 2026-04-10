@@ -1,0 +1,18 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# After first deploy, set in the Render dashboard (or link a Postgres add-on):
+#   DATABASE_URL, JWT_SECRET, FRONTEND_URL (your Vercel URL)
+# Run migrations once from your machine: cd backend && DATABASE_URL=... npm run migrate
+
+services:
+  - type: web
+    name: csa-backend
+    runtime: node
+    region: oregon
+    plan: free
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production

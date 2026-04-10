@@ -1,9 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import './loadEnv';
 import pool from './config/db';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 async function migrate() {
   const client = await pool.connect();

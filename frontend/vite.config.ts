@@ -7,7 +7,8 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        // 127.0.0.1 avoids Windows resolving "localhost" to ::1 while Node listens on IPv4 only
+        target: 'http://127.0.0.1:3000',
         changeOrigin: true,
       },
     },

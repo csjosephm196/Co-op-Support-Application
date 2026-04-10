@@ -7,7 +7,11 @@
     "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "migrate": "ts-node src/migrate.ts"
+    "migrate": "ts-node src/migrate.ts",
+    "migrate:002": "node scripts/run-migration-002.js",
+    "db:verify": "node scripts/verify-local-db.js",
+    "db:seed": "node seed-test-data.js",
+    "db:reset-schema": "node scripts/reset-public-schema.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

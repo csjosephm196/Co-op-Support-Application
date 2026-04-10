@@ -67,6 +67,7 @@ cd backend
 cp ../.env.example .env   # Edit with your DB credentials
 npm install
 npm run migrate
+npm run db:verify   # Confirms DB + admin@csa-portal.com / Admin123!@# (fixes hash if needed)
 ```
 
 ### 2. Backend
@@ -98,6 +99,12 @@ Copy `.env.example` to `backend/.env` and configure:
 | `SMTP_USER` | SMTP username |
 | `SMTP_PASS` | SMTP password |
 | `FRONTEND_URL` | Frontend URL for CORS & email links |
+
+### Deployment (Vercel + Render)
+
+Host the **frontend** on [Vercel](https://vercel.com) and the **API** on [Render](https://render.com). Set `VITE_API_URL` on Vercel to your Render service URL, and `FRONTEND_URL` on Render to your Vercel URL for CORS.
+
+Step-by-step instructions: **[DEPLOY.md](./DEPLOY.md)**.
 
 ## Features
 

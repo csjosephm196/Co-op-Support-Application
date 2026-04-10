@@ -1,10 +1,24 @@
+import '../loadEnv';
 import { Pool } from 'pg';
-import dotenv from 'dotenv';
 
-dotenv.config();
+const connectionString = process.env.DATABASE_URL;
+
+/** TLS for cloud Postgres (Render, Neon, Supabase). Localhost URLs skip SSL. */
+function sslForUrl(url: string | undefined): boolean | { rejectUnauthorized: boolean } | undefined {
+  if (!url) return undefined;
+  if (
+    url.includes('render.com') ||
+    url.includes('neon.tech') ||
+    url.includes('supabase.co')
+  ) {
+    return { rejectUnauthorized: false };
+  }
+  return undefined;
+}
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString,
+  ssl: sslForUrl(connectionString),
 });
 
 pool.on('error', (err) => {

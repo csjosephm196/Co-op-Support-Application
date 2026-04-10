@@ -1,6 +1,7 @@
+import './loadEnv';
+import fs from 'fs';
 import express from 'express';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import path from 'path';
 import rateLimit from 'express-rate-limit';
 
@@ -11,15 +12,23 @@ import coordinatorRoutes from './routes/coordinator';
 import employerRoutes from './routes/employer';
 import invitationRoutes from './routes/invitations';
 
-dotenv.config();
-
 const app = express();
+app.set('trust proxy', 1);
+
+const uploadsDir = path.join(__dirname, '../uploads');
+fs.mkdirSync(uploadsDir, { recursive: true });
+
 const PORT = parseInt(process.env.PORT || '3000');
 
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
-  credentials: true,
-}));
+const isProd = process.env.NODE_ENV === 'production';
+
+app.use(
+  cors({
+    // Dev: reflect request origin so localhost, 127.0.0.1, and LAN (192.168.*:5173) all work with Vite
+    origin: isProd ? (process.env.FRONTEND_URL || 'http://localhost:5173') : true,
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: '10mb' }));
 
 const limiter = rateLimit({

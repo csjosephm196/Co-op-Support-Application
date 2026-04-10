@@ -28,7 +28,14 @@ export default function LoginPage() {
         navigate('/');
       }
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Login failed');
+      const msg = err.response?.data?.error;
+      if (err.code === 'ERR_NETWORK' || err.message === 'Network Error') {
+        toast.error('Cannot reach API — start the backend (cd backend && npm run dev) on port 3000');
+      } else if (msg) {
+        toast.error(msg);
+      } else {
+        toast.error('Login failed');
+      }
     } finally {
       setSubmitting(false);
     }

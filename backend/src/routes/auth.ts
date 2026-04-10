@@ -70,7 +70,8 @@ router.post('/register', async (req: Request, res: Response) => {
 // POST /api/auth/login
 router.post('/login', async (req: Request, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const email = typeof req.body.email === 'string' ? req.body.email.trim() : '';
+    const password = typeof req.body.password === 'string' ? req.body.password : '';
 
     const result = await query(
       'SELECT id, email, password_hash, full_name, role, is_verified, totp_enabled, totp_secret FROM users WHERE email = $1 AND is_active = true',

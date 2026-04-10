@@ -1,5 +1,6 @@
 const http = require('http');
 require('dotenv').config();
+const { poolOptions } = require('./scripts/pg-pool-options');
 
 const BASE = 'http://localhost:3000';
 let passed = 0;
@@ -249,7 +250,7 @@ async function run() {
 
   // Reset student2's application to draft for testing
   const { Pool } = require('pg');
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const pool = new Pool(poolOptions());
   await pool.query("DELETE FROM applications WHERE student_id = (SELECT id FROM users WHERE email = 'student2@test.com')");
 
   const lowGpa = await req('POST', '/api/applications/submit', { gpa: '2.5', program: 'Math', yearOfStudy: '2', coverLetter: '', additionalInfo: '', phone: '', address: '' }, s2Token);
