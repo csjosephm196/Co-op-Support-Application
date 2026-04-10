@@ -49,6 +49,10 @@ app.use('/api/invitations', invitationRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+app.get('/', (_req, res) => {
+  res.json({ service: 'csa-backend', health: '/api/health' });
+});
+
 app.get('/api/health', (_req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
